@@ -3,115 +3,524 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hacked</title>
+    <title>System Breach Detected</title>
     <style>
+        :root {
+            --neon-green: #0f0;
+            --neon-blue: #00ffff;
+            --neon-red: #ff003c;
+            --dark-bg: #0a0a0a;
+            --matrix-green: #00ff41;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             margin: 0;
             padding: 0;
-            background: black;
+            background: var(--dark-bg);
             color: white;
             font-family: 'Courier New', monospace;
             overflow: hidden;
+            min-height: 100vh;
+            position: relative;
         }
 
-        .stars {
+        /* Matrix Rain Effect */
+        .matrix-rain {
             position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: black;
             z-index: 1;
+            opacity: 0.3;
         }
 
-        .stars span {
+        /* Terminal Style Container */
+        .terminal {
             position: absolute;
-            background: #00ffff;
-            width: 2px;
-            height: 2px;
-            border-radius: 50%;
-            animation: blink 2s infinite;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 800px;
+            height: 500px; /* Fixed height */
+            background: rgba(10, 10, 10, 0.95);
+            border: 1px solid var(--neon-green);
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            z-index: 10;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        @keyframes blink {
-            0%, 100% {
-                opacity: 0.1;
+        .terminal-header {
+            background: rgba(20, 20, 20, 0.9);
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--neon-green);
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .terminal-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .terminal-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .close {
+            background: #ff5f56;
+        }
+
+        .minimize {
+            background: #ffbd2e;
+        }
+
+        .maximize {
+            background: #27ca3f;
+        }
+
+        .terminal-title {
+            flex-grow: 1;
+            text-align: center;
+            color: var(--neon-green);
+            font-weight: bold;
+        }
+
+        .terminal-body {
+            padding: 15px;
+            flex-grow: 1;
+            overflow-y: auto;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        /* Terminal Prompt */
+        .terminal-prompt {
+            color: var(--neon-green);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .prompt-user {
+            color: var(--neon-blue);
+        }
+
+        .prompt-symbol {
+            margin: 0 5px;
+        }
+
+        .terminal-input {
+            background: transparent;
+            border: none;
+            color: var(--neon-green);
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            width: 100%;
+            outline: none;
+            caret-color: var(--neon-green);
+        }
+
+        .terminal-output {
+            margin-bottom: 10px;
+            white-space: pre-wrap;
+        }
+
+        .command {
+            color: var(--neon-green);
+        }
+
+        .error {
+            color: var(--neon-red);
+        }
+
+        .warning {
+            color: var(--neon-blue);
+        }
+
+        .system-info {
+            color: #ffff00;
+        }
+
+        /* Glitch Text Effect */
+        .glitch-text {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+            color: var(--neon-red);
+            text-shadow: 0 0 10px var(--neon-red);
+            animation: glitch 3s infinite;
+        }
+
+        @keyframes glitch {
+            0% {
+                text-shadow: 2px 2px 0px var(--neon-blue), -2px -2px 0px var(--neon-green);
             }
-            50% {
+            20% {
+                text-shadow: -2px -2px 0px var(--neon-blue), 2px 2px 0px var(--neon-green);
+            }
+            40% {
+                text-shadow: 2px -2px 0px var(--neon-blue), -2px 2px 0px var(--neon-green);
+            }
+            60% {
+                text-shadow: -2px 2px 0px var(--neon-blue), 2px -2px 0px var(--neon-green);
+            }
+            80% {
+                text-shadow: 0px 0px 5px var(--neon-blue), 0px 0px 5px var(--neon-green);
+            }
+            100% {
+                text-shadow: 2px 2px 0px var(--neon-blue), -2px -2px 0px var(--neon-green);
+            }
+        }
+
+        /* Hacker Group Name */
+        .group-name {
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue);
+            animation: pulse 2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from {
+                opacity: 0.7;
+            }
+            to {
                 opacity: 1;
             }
         }
 
-        .logo-container {
-            position: absolute;
-            top: 40%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 2;
-            text-align: center;
+        /* System Status */
+        .system-status {
+            margin: 20px 0;
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 5px;
+            padding: 12px;
+            background: rgba(0, 20, 0, 0.2);
         }
 
-        .logo-container img {
-            width: 900px;
-            height: auto;
-            opacity: 0.8;
-            animation: fadeIn 3s infinite alternate;
-        }
-
-        @keyframes fadeIn {
-            0% { opacity: 0.6; }
-            100% { opacity: 1; }
-        }
-
-        .text-main {
-            position: absolute;
-            top: 60%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: #00ffff;
-            animation: glitch 1s infinite ease-in-out;
-            font-size: 3rem;
-            z-index: 10;
-            text-shadow: 0px 0px 10px #00ffff;
-        }
-
-        .footer {
-            position: absolute;
-            top: 70%; /* Posisikan tepat di bawah teks utama */
-            left: 50%;
-            transform: translateX(-50%);
-            color: white;
-            text-align: center;
+        .status-line {
+            margin: 8px 0;
             font-size: 1rem;
-            z-index: 10; /* Pastikan footer tetap terlihat */
         }
 
-        @keyframes glitch {
-            0% { text-shadow: 2px 2px red; }
-            20% { text-shadow: -2px -2px blue; }
-            40% { text-shadow: 2px -2px green; }
-            60% { text-shadow: -2px 2px yellow; }
-            80% { text-shadow: 0px 0px limegreen; }
-            100% { text-shadow: 2px 2px red; }
+        .status-label {
+            display: inline-block;
+            width: 160px;
+            color: var(--neon-green);
+        }
+
+        .status-value {
+            color: var(--neon-red);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 0, 60, 0.2);
+            border-radius: 4px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: var(--neon-red);
+            width: 0%;
+            animation: progress-animation 5s infinite;
+        }
+
+        @keyframes progress-animation {
+            0% { width: 0%; }
+            50% { width: 100%; }
+            100% { width: 0%; }
+        }
+
+        /* Binary Code Animation */
+        .binary-code {
+            position: absolute;
+            color: var(--matrix-green);
+            font-size: 0.8rem;
+            opacity: 0.7;
+            z-index: 2;
+        }
+
+        /* Scan Lines Effect */
+        .scan-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.03) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            background-size: 100% 4px;
+            z-index: 5;
+            pointer-events: none;
+            animation: scan 8s linear infinite;
+        }
+
+        @keyframes scan {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 0 100%;
+            }
+        }
+
+        /* Cursor Blink Animation */
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background-color: var(--neon-green);
+            margin-left: 2px;
+            animation: blink 1s infinite;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .terminal {
+                height: 450px;
+                width: 95%;
+            }
+            
+            .glitch-text {
+                font-size: 2rem;
+            }
+            
+            .group-name {
+                font-size: 1.5rem;
+            }
+            
+            .terminal-body {
+                padding: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .terminal {
+                height: 400px;
+            }
+            
+            .glitch-text {
+                font-size: 1.8rem;
+            }
+            
+            .group-name {
+                font-size: 1.3rem;
+            }
+            
+            .status-label {
+                width: 130px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="stars"></div>
-    <div class="logo-container">
-        <img src="https://media.cnn.com/api/v1/images/stellar/prod/120209070740-guy-fawkes.jpg?q=x_0,y_165,h_1968,w_3499,c_crop/h_833,w_1480" alt="Anonymous Logo">
+    <!-- Matrix Rain Background -->
+    <canvas class="matrix-rain" id="matrixCanvas"></canvas>
+    
+    <!-- Scan Lines Effect -->
+    <div class="scan-lines"></div>
+    
+    <!-- Terminal Window -->
+    <div class="terminal">
+        <div class="terminal-header">
+            <div class="terminal-buttons">
+                <div class="terminal-button close"></div>
+                <div class="terminal-button minimize"></div>
+                <div class="terminal-button maximize"></div>
+            </div>
+            <div class="terminal-title">SYSTEM TERMINAL - SECURITY BREACH</div>
+        </div>
+        <div class="terminal-body" id="terminalBody">
+            <!-- Terminal content will be generated by JavaScript -->
+        </div>
     </div>
-<!--     <div class="text-main">HACKED BY StormBreaker</div> -->
-     <div class="text-main">HACKED BY oph1uchus</div>
-    <div class="footer">Your Security is Weak | Moon</div>
 
     <script>
-        const starsContainer = document.querySelector('.stars');
-        for (let i = 0; i < 100; i++) {
-            const star = document.createElement('span');
-            star.style.top = Math.random() * 100 + '%';
-            star.style.left = Math.random() * 100 + '%';
-            star.style.animationDelay = Math.random() * 2 + 's';
-            starsContainer.appendChild(star);
+        // Matrix Rain Effect
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas size
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        // Characters for the matrix rain
+        const chars = "01010101010101010101";
+        const charArray = chars.split("");
+        
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        
+        // Array of drops - one per column
+        const drops = [];
+        for (let i = 0; i < columns; i++) {
+            drops[i] = 1;
+        }
+        
+        // Drawing the characters
+        function drawMatrix() {
+            // Black background with opacity for the trail effect
+            ctx.fillStyle = "rgba(0, 0, 0, 0.04)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = "#0F0"; // Green text
+            ctx.font = fontSize + "px monospace";
+            
+            // Loop over drops
+            for (let i = 0; i < drops.length; i++) {
+                // Random character to print
+                const text = charArray[Math.floor(Math.random() * charArray.length)];
+                
+                // x = i * fontSize, y = value of drops[i] * fontSize
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                // Sending the drop back to the top after it has crossed the screen
+                // Adding randomness to the reset
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                
+                // Incrementing Y coordinate
+                drops[i]++;
+            }
+        }
+        
+        // Resize canvas when window is resized
+        window.addEventListener('resize', function() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        // Binary Code Animation
+        function createBinaryCode() {
+            const binaryCode = document.createElement('div');
+            binaryCode.className = 'binary-code';
+            binaryCode.textContent = Math.random().toString(2).substring(2, 15);
+            binaryCode.style.left = Math.random() * 100 + '%';
+            binaryCode.style.top = Math.random() * 100 + '%';
+            document.body.appendChild(binaryCode);
+            
+            // Animate the binary code
+            let opacity = 1;
+            const fadeInterval = setInterval(() => {
+                opacity -= 0.02;
+                binaryCode.style.opacity = opacity;
+                
+                if (opacity <= 0) {
+                    clearInterval(fadeInterval);
+                    binaryCode.remove();
+                }
+            }, 50);
+        }
+        
+        // Terminal Simulation
+        const terminalBody = document.getElementById('terminalBody');
+        let currentLine = 0;
+        
+        // Terminal commands and outputs
+        const terminalScript = [
+            { type: 'output', content: 'Initializing system diagnostics...', delay: 500 },
+            { type: 'output', content: 'Checking security protocols...', delay: 800 },
+            { type: 'output', content: 'WARNING: Unauthorized access detected!', class: 'error', delay: 600 },
+            { type: 'output', content: 'Firewall integrity: COMPROMISED', class: 'error', delay: 400 },
+            { type: 'output', content: 'Data encryption: DECRYPTED', class: 'error', delay: 400 },
+            { type: 'output', content: 'Admin privileges: ELEVATED', class: 'error', delay: 400 },
+            { type: 'output', content: ' ', delay: 300 },
+            { type: 'output', content: '=== SYSTEM BREACH DETECTED ===', class: 'warning', delay: 800 },
+            { type: 'output', content: ' ', delay: 300 },
+            { type: 'output', content: 'Intruder: "art of clown"', class: 'system-info', delay: 700 },
+            { type: 'output', content: 'Signature: Advanced persistent threat', class: 'system-info', delay: 500 },
+            { type: 'output', content: 'Method: Zero-day exploit', class: 'system-info', delay: 500 },
+            { type: 'output', content: 'Target: All core systems', class: 'system-info', delay: 500 },
+            { type: 'output', content: ' ', delay: 300 },
+            { type: 'output', content: 'Attempting countermeasures...', delay: 600 },
+            { type: 'output', content: 'Countermeasure status: FAILED', class: 'error', delay: 500 },
+            { type: 'output', content: 'Backup systems: OFFLINE', class: 'error', delay: 500 },
+            { type: 'output', content: 'Network isolation: BYPASSED', class: 'error', delay: 500 },
+            { type: 'output', content: ' ', delay: 300 },
+            { type: 'output', content: 'Your Security is Weak | We Are Everywhere | Moon', class: 'warning', delay: 1000 },
+            { type: 'output', content: ' ', delay: 300 },
+            { type: 'output', content: 'System integrity: 0%', class: 'error', delay: 500 },
+            { type: 'output', content: 'Recommendation: Immediate system shutdown', class: 'warning', delay: 800 },
+            { type: 'output', content: ' ', delay: 300 },
+            { type: 'prompt', delay: 1000 }
+        ];
+        
+        // Function to add a new line to the terminal
+        function addTerminalLine(lineData) {
+            const lineElement = document.createElement('div');
+            
+            if (lineData.type === 'output') {
+                lineElement.className = `terminal-output ${lineData.class || ''}`;
+                lineElement.textContent = lineData.content;
+            } else if (lineData.type === 'prompt') {
+                lineElement.className = 'terminal-prompt';
+                lineElement.innerHTML = `
+                    <span class="prompt-user">root@system</span>
+                    <span class="prompt-symbol">:</span>
+                    <span class="prompt-path">/home</span>
+                    <span class="prompt-symbol">$</span>
+                    <span class="cursor"></span>
+                `;
+            }
+            
+            terminalBody.appendChild(lineElement);
+            terminalBody.scrollTop = terminalBody.scrollHeight;
+        }
+        
+        // Function to simulate typing effect
+        function typeTerminalLine(lineData, index) {
+            setTimeout(() => {
+                addTerminalLine(lineData);
+                
+                // Continue with next line if available
+                if (index < terminalScript.length - 1) {
+                    typeTerminalLine(terminalScript[index + 1], index + 1);
+                }
+            }, lineData.delay);
+        }
+        
+        // Start the terminal simulation
+        typeTerminalLine(terminalScript[0], 0);
+        
+        // Start animations
+        setInterval(drawMatrix, 35);
+        setInterval(createBinaryCode, 100);
+        
+        // Add some initial binary codes
+        for (let i = 0; i < 20; i++) {
+            setTimeout(createBinaryCode, i * 100);
         }
     </script>
 </body>
